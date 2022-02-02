@@ -1,0 +1,12 @@
+{
+  "schemaPath": "schema.local.graphql",
+  "excludes": ["schema.remote.graphql"],
+  "extensions": {
+    "endpoints": {
+      "dev": {
+        "url": "https://swapi-graphql.netlify.app/.netlify/functions/index",
+        "introspect": false
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+schema:
+  - schema.local.graphql
+  - schema.permission-extension.graphql
+documents: ./src/**/*.graphql
+generates:
+  ./src/types.ts:
+    plugins:
+      - typescript
+      - typescript-operations

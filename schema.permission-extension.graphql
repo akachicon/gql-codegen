@@ -1,0 +1,2 @@
+"Allows to specify permitted content that will be excluded if a user has no necessary permissions"
+directive @permission on FIELD
