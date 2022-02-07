@@ -1,0 +1,8 @@
+fragment planet on Planet {
+    name
+    filmConnection {
+        films {
+            ...film
+        }
+    }
+}

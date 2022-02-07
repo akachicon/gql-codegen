@@ -1,9 +1,9 @@
-query PlanetListQuery {
+query PlanetList {
     allPlanets {
         edges {
             node {
                 id
-                name
+                ...planet
             }
         }
     }

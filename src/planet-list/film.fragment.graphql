@@ -1,0 +1,4 @@
+fragment film on Film {
+    id
+    title
+}
