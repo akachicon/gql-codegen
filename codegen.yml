@@ -2,6 +2,18 @@ schema:
   - schema.local.graphql
   - schema.permission-extension.graphql
 documents: ./src/**/*.graphql
+
+# It might be cumbersome to have all query names unique.
+# Note, that if skipDuplicateValidation is false, documents that are fully
+# identical will result in only one file generated and won't throw.
+# https://github.com/dotansimha/graphql-code-generator/blob/77faafed93eb0fbc1fa39085c21e701cb56ce8e0/packages/graphql-codegen-core/src/codegen.ts#L197
+# Also, for some reason (probably because of the preset or passing config)
+# validation config only works if it's specified as a part of `config` field
+# and not as a root flag `skipDocumentsValidation`.
+config:
+  skipDocumentsValidation:
+    skipDuplicateValidation: true
+
 generates:
   ./src/__generated__/schema-types.ts:
     plugins:

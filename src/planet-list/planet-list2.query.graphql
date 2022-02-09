@@ -1,0 +1,9 @@
+query PlanetList {
+    allPlanets {
+        edges {
+            node {
+                id
+            }
+        }
+    }
+}
