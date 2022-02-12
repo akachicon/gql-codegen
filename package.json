@@ -21,7 +21,9 @@
     "build": "craco build",
     "test": "craco test",
     "gql:generate": "graphql-codegen",
-    "gql:update-schema": "node ./scripts/gql-update-schema.mjs"
+    "gql:update-schema": "node ./scripts/gql-update-schema.mjs",
+    "lib:build": "tsc --project ./lib",
+    "lib:watch": "yarn run lib:build -- --watch"
   },
   "eslintConfig": {
     "extends": [
@@ -46,7 +48,9 @@
     "@graphql-codegen/cli": "^2.4.0",
     "@graphql-codegen/near-operation-file-preset": "^2.2.3",
     "@graphql-codegen/typescript-operations": "^2.2.3",
+    "@tsconfig/node16": "^1.0.2",
     "concurrently": "^7.0.0",
-    "graphql": "^16.3.0"
+    "graphql": "^16.3.0",
+    "tsc": "^2.0.4"
   }
 }

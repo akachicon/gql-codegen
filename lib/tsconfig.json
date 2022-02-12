@@ -1,0 +1,8 @@
+{
+  "include": ["."],
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "types": ["node"],
+  "compilerOptions": {
+    "outDir": "./build"
+  }
+}
