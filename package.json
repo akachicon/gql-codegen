@@ -17,13 +17,13 @@
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "start": "yarn gql:update-schema && concurrently \"craco start\" \"yarn gql:generate --watch\"",
+    "start": "yarn lib:build && yarn gql:update-schema && concurrently \"craco start\" \"yarn gql:generate --watch\"",
     "build": "craco build",
     "test": "craco test",
     "gql:generate": "graphql-codegen",
-    "gql:update-schema": "node ./scripts/gql-update-schema.mjs",
+    "gql:update-schema": "node ./lib/build/gql-update-schema",
     "lib:build": "tsc --project ./lib",
-    "lib:watch": "yarn run lib:build -- --watch"
+    "lib:watch": "yarn lib:build --watch"
   },
   "eslintConfig": {
     "extends": [
