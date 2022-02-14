@@ -1,4 +1,4 @@
-import {PlanetListQuery} from './__generated__/planet-list.query';
+import { PlanetListQuery } from './__generated__/planet-list.query';
 
 declare const planetList: PlanetListQuery;
 

@@ -19,11 +19,12 @@ generates:
     plugins:
       - typescript
   ./src/:
-    preset: near-operation-file
+    preset: ./lib/build/gql-service-preset
     presetConfig:
       baseTypesPath: ./__generated__/schema-types.ts
-      extension: .tsx
+      extension: .ts
       folder: __generated__
+      serviceDir: ../gql-service/build
     plugins:
       - typescript-operations
     config:

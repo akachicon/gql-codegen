@@ -16,6 +16,7 @@
 
 # GraphQL artifacts
 /src/**/__generated__
+/gql-service/build
 
 # Lib artifacts
 /lib/build
