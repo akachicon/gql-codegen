@@ -24,6 +24,7 @@ generates:
       baseTypesPath: ./__generated__/schema-types.ts
       extension: .ts
       folder: __generated__
+      importTypesNamespace: Types
       serviceDir: ../gql-service/build
     plugins:
       - typescript-operations
