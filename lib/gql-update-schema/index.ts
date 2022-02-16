@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import util from 'util';
+import { formatMessageFactory } from '../utils';
 
 // This module supposed to update local schema by fetching from remote.
 // For demo purposes it just reads from local files.
@@ -9,9 +10,7 @@ const PACKAGE_NAME = 'gql-update-schema';
 const GENERATED_SCHEMA_NAME = 'schema.local.graphql';
 const appRoot = process.cwd();
 
-function formatMessage(text: string) {
-  return `${PACKAGE_NAME}: ${text}`;
-}
+const formatMessage = formatMessageFactory(PACKAGE_NAME);
 
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
