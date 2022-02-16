@@ -20,7 +20,7 @@
     "start": "yarn lib:build && yarn gql:update-schema && concurrently \"craco start\" \"yarn gql:generate --watch\"",
     "build": "yarn lib:build && yarn gql:update-schema && craco build",
     "test": "craco test",
-    "gql:generate": "graphql-codegen",
+    "gql:generate": "graphql-codegen -r dotenv/config",
     "gql:update-schema": "node ./lib/build/gql-update-schema",
     "lib:build": "tsc --project ./lib",
     "lib:watch": "yarn lib:build --watch"

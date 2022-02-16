@@ -26,6 +26,7 @@ generates:
       folder: __generated__
       importTypesNamespace: Types
       serviceDir: ../gql-service/build
+      queryImpl: ${GQL_CODEGEN_QUERY_IMPL}
     plugins:
       - typescript-operations
     config:

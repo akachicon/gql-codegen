@@ -5,7 +5,11 @@ import type { GqlServicePluginConfig } from './types';
 const pluginFnLocal: PluginFunction<GqlServicePluginConfig> = async (
   schema,
   documents,
+  config,
 ) => {
+  if (!config.queryImpl) {
+    throw new Error(formatMessage('queryImpl is not provided'));
+  }
   return {
     content: '',
   };

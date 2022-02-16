@@ -12,7 +12,10 @@ import {
 import type { Types } from '@graphql-codegen/plugin-helpers';
 import type { NearOperationFileConfig } from '@graphql-codegen/near-operation-file-preset';
 import type { ImportDeclaration } from '@graphql-codegen/visitor-plugin-common';
-import type { GqlServicePluginConfig } from '../gql-service-plugin/types';
+import type {
+  GqlServicePluginConfig,
+  QueryImpl,
+} from '../gql-service-plugin/types';
 import type { GqlServicePresetConfig } from './types';
 
 type PluginMap = Types.GenerateOptions['pluginMap'];
@@ -23,6 +26,7 @@ function ensurePresetOptions(
   baseTypesPath: string;
   cwd: string;
   importTypesNamespace: string;
+  queryImpl: QueryImpl;
   serviceDir: string;
 } {
   if (!options.presetConfig.baseTypesPath) {
@@ -44,6 +48,15 @@ function ensurePresetOptions(
   }
   const importTypesNamespace = options.presetConfig.importTypesNamespace;
 
+  const queryImpl = options.presetConfig.queryImpl;
+  if (!queryImpl) {
+    throw new Error(formatMessage('queryImpl config should be specified'));
+  }
+  const availableQueryImpls: QueryImpl[] = ['local', 'service'];
+  if (!availableQueryImpls.includes(queryImpl)) {
+    throw new Error(formatMessage('Provided queryImpl value is not supported'));
+  }
+
   if (!options.presetConfig.serviceDir) {
     throw new Error(formatMessage('serviceDir config should be specified'));
   }
@@ -57,6 +70,7 @@ function ensurePresetOptions(
     baseTypesPath: resolvedBaseTypesPath,
     cwd,
     importTypesNamespace,
+    queryImpl,
     serviceDir: resolvedServiceDir,
   };
 }
@@ -173,7 +187,7 @@ function checkOutputDocumentsOperations(documents: Types.DocumentFile[]) {
 
 export const preset: Types.OutputPreset<GqlServicePresetConfig> = {
   buildGeneratesSection: async (options) => {
-    const { baseTypesPath, cwd, importTypesNamespace, serviceDir } =
+    const { baseTypesPath, cwd, importTypesNamespace, queryImpl, serviceDir } =
       ensurePresetOptions(options);
 
     const nearOperationFileResult =
@@ -195,7 +209,7 @@ export const preset: Types.OutputPreset<GqlServicePresetConfig> = {
       const serviceOutput = createServiceOutput({
         fromOutput: generateOptions,
         nearOperationFileOptions: options,
-        serviceConfig: { domain: 'service', skipValidation: true },
+        serviceConfig: { domain: 'service', queryImpl, skipValidation: true },
         baseTypesPath,
         cwd,
         importTypesNamespace,
@@ -203,6 +217,7 @@ export const preset: Types.OutputPreset<GqlServicePresetConfig> = {
       });
       addServicePlugin(generateOptions, {
         domain: 'local',
+        queryImpl,
         skipValidation: true,
       });
       serviceOutputs.push(serviceOutput);
