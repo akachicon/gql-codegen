@@ -1,11 +1,11 @@
 import { Kind, visit } from 'graphql';
 import { formatMessageFactory } from './formatting';
 
-const PACKAGE_NAME = 'validate-single-operation';
-const formatMessage = formatMessageFactory(PACKAGE_NAME);
-
 import type { ASTVisitor } from 'graphql';
 import type { Types } from '@graphql-codegen/plugin-helpers';
+
+const PACKAGE_NAME = 'validate-single-operation';
+const formatMessage = formatMessageFactory(PACKAGE_NAME);
 
 export function validateSingleOperation(document: Types.DocumentFile): {
   isValid: boolean;
