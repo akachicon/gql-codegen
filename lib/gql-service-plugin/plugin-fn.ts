@@ -1,4 +1,6 @@
 import { formatMessage } from './utils';
+import { serviceFileBuilderMap } from './service-file-builder';
+import { contentBuilder as localContentBuilder } from './local-content-builder';
 import type { PluginFunction, Types } from '@graphql-codegen/plugin-helpers';
 import type { GqlServicePluginConfig } from './types';
 
@@ -6,22 +8,29 @@ const pluginFnLocal: PluginFunction<GqlServicePluginConfig> = async (
   schema,
   documents,
   config,
+  info,
 ) => {
   if (!config.queryImpl) {
     throw new Error(formatMessage('queryImpl is not provided'));
   }
-  return {
-    content: '',
-  };
+  return localContentBuilder(schema, documents, config, info);
 };
 
 const pluginFnService: PluginFunction<GqlServicePluginConfig> = async (
   schema,
   documents,
+  config,
+  info,
 ) => {
-  return {
-    content: '',
-  };
+  if (!config.serviceFileExt) {
+    throw new Error(formatMessage('serviceFileExt is not provided'));
+  }
+  return serviceFileBuilderMap[config.serviceFileExt](
+    schema,
+    documents,
+    config,
+    info,
+  );
 };
 
 export const pluginFn: PluginFunction<GqlServicePluginConfig> = async (

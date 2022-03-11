@@ -18,7 +18,7 @@
   },
   "scripts": {
     "start": "yarn lib:build && yarn gql:update-schema && concurrently \"craco start\" \"yarn gql:generate --watch\"",
-    "build": "yarn lib:build && yarn gql:update-schema && craco build",
+    "build": "yarn lib:build && yarn gql:update-schema && yarn gql:generate && craco build",
     "test": "craco test",
     "gql:generate": "graphql-codegen -r dotenv/config",
     "gql:update-schema": "node ./lib/build/gql-update-schema",

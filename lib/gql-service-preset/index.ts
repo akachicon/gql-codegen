@@ -1,18 +1,16 @@
-import { join, relative, resolve } from 'path';
+import { relative, resolve } from 'path';
 import { preset as nearOperationFilePreset } from '@graphql-codegen/near-operation-file-preset';
-import { generateImportStatement } from '@graphql-codegen/visitor-plugin-common';
 import { validateSingleOperation } from '../utils';
-import { getPluginName, formatMessage } from './utils';
 import {
   PACKAGE_NAME as SERVICE_PLUGIN_NAME,
   plugin as servicePlugin,
   validate as servicePluginValidate,
 } from '../gql-service-plugin';
+import { changeExtension, getPluginName, formatMessage } from './utils';
 
 import type { Types } from '@graphql-codegen/plugin-helpers';
-import type { NearOperationFileConfig } from '@graphql-codegen/near-operation-file-preset';
-import type { ImportDeclaration } from '@graphql-codegen/visitor-plugin-common';
 import type {
+  ServiceFileExt,
   GqlServicePluginConfig,
   QueryImpl,
 } from '../gql-service-plugin/types';
@@ -23,30 +21,21 @@ type PluginMap = Types.GenerateOptions['pluginMap'];
 function ensurePresetOptions(
   options: Types.PresetFnArgs<GqlServicePresetConfig>,
 ): {
-  baseTypesPath: string;
   cwd: string;
-  importTypesNamespace: string;
+  serviceFileExt: ServiceFileExt;
   queryImpl: QueryImpl;
   serviceDir: string;
 } {
-  if (!options.presetConfig.baseTypesPath) {
-    throw new Error(formatMessage('baseTypesPath config should be specified'));
-  }
-  const baseTypesPath = options.presetConfig.baseTypesPath;
-  let resolvedBaseTypesPath = join(options.baseOutputDir, baseTypesPath);
-  // https://github.com/dotansimha/graphql-code-generator/blob/8c7a49ba30ac6d5f86d6c4e5e298231e3159d748/packages/presets/near-operation-file/src/index.ts#L173
-  if (options.presetConfig.baseTypesPath.startsWith('~')) {
-    resolvedBaseTypesPath = options.presetConfig.baseTypesPath;
-  }
-
   const cwd = options.presetConfig.cwd ?? process.cwd();
 
-  if (!options.presetConfig.importTypesNamespace) {
-    throw new Error(
-      formatMessage('importTypesNamespace config should be specified'),
-    );
+  const serviceFileExt = options.presetConfig.serviceFileExt;
+  if (!serviceFileExt) {
+    throw new Error(formatMessage('serviceFileExt config should be specified'));
   }
-  const importTypesNamespace = options.presetConfig.importTypesNamespace;
+  const availableServiceFileExts: ServiceFileExt[] = ['.graphql'];
+  if (!availableServiceFileExts.includes(serviceFileExt)) {
+    throw new Error(formatMessage('Provided fileExt value is not supported'));
+  }
 
   const queryImpl = options.presetConfig.queryImpl;
   if (!queryImpl) {
@@ -67,9 +56,8 @@ function ensurePresetOptions(
   );
 
   return {
-    baseTypesPath: resolvedBaseTypesPath,
     cwd,
-    importTypesNamespace,
+    serviceFileExt,
     queryImpl,
     serviceDir: resolvedServiceDir,
   };
@@ -85,71 +73,29 @@ function extendPluginMap(pluginMap: PluginMap): PluginMap {
   };
 }
 
-function checkImportStatementEquality(statement1: string, statement2: string) {
-  return statement1.trim() === statement2.trim();
-}
-
 function createServiceOutput({
   fromOutput,
-  nearOperationFileOptions,
-  serviceConfig,
-  baseTypesPath,
   cwd,
-  importTypesNamespace,
+  fileExt,
+  serviceConfig,
   serviceDir,
 }: {
   fromOutput: Types.GenerateOptions;
-  nearOperationFileOptions: Types.PresetFnArgs<NearOperationFileConfig>;
-  serviceConfig: GqlServicePluginConfig;
-  baseTypesPath: string;
   cwd: string;
-  importTypesNamespace: string;
+  fileExt: ServiceFileExt;
+  serviceConfig: GqlServicePluginConfig;
   serviceDir: string;
 }): Types.GenerateOptions {
   const relativeFilename = relative(cwd, fromOutput.filename);
-  const serviceFilename = resolve(serviceDir, relativeFilename);
+  const serviceFilenameWithExt = resolve(serviceDir, relativeFilename);
+  const serviceFilename = changeExtension(serviceFilenameWithExt, fileExt);
 
-  // Mirror near-operation-file-preset logic.
-  // https://github.com/dotansimha/graphql-code-generator/blob/8c7a49ba30ac6d5f86d6c4e5e298231e3159d748/packages/presets/near-operation-file/src/index.ts#L176
-  const typesImport = nearOperationFileOptions.config.useTypeImports ?? false;
-
-  const importTypesSharedOptions: Omit<ImportDeclaration, 'outputPath'> = {
-    baseDir: cwd,
-    importSource: {
-      path: baseTypesPath,
-      namespace: importTypesNamespace,
-    },
-    baseOutputDir: nearOperationFileOptions.baseOutputDir,
-    typesImport,
-  };
-  const serviceSchemaTypesImportStatement = generateImportStatement({
-    ...importTypesSharedOptions,
-    outputPath: serviceFilename,
-  });
-  const generatedSchemaTypesImportStatement = generateImportStatement({
-    ...importTypesSharedOptions,
-    outputPath: fromOutput.filename,
-  });
-
-  const refinedPlugins = fromOutput.plugins.filter(
-    (plugin) => getPluginName(plugin) !== SERVICE_PLUGIN_NAME,
+  const servicePlugins = fromOutput.plugins.filter(
+    (plugin) =>
+      getPluginName(plugin) !== SERVICE_PLUGIN_NAME &&
+      getPluginName(plugin) !== 'typescript-operations' &&
+      getPluginName(plugin) !== 'add',
   );
-  const servicePlugins = refinedPlugins.map((plugin) => {
-    if (
-      getPluginName(plugin) === 'add' &&
-      checkImportStatementEquality(
-        plugin.add.content,
-        generatedSchemaTypesImportStatement,
-      )
-    ) {
-      return {
-        add: {
-          content: serviceSchemaTypesImportStatement,
-        },
-      };
-    }
-    return plugin;
-  });
   servicePlugins.push({ [SERVICE_PLUGIN_NAME]: serviceConfig });
 
   return {
@@ -187,7 +133,7 @@ function checkOutputDocumentsOperations(documents: Types.DocumentFile[]) {
 
 export const preset: Types.OutputPreset<GqlServicePresetConfig> = {
   buildGeneratesSection: async (options) => {
-    const { baseTypesPath, cwd, importTypesNamespace, queryImpl, serviceDir } =
+    const { cwd, serviceFileExt, queryImpl, serviceDir } =
       ensurePresetOptions(options);
 
     const nearOperationFileResult =
@@ -208,11 +154,14 @@ export const preset: Types.OutputPreset<GqlServicePresetConfig> = {
 
       const serviceOutput = createServiceOutput({
         fromOutput: generateOptions,
-        nearOperationFileOptions: options,
-        serviceConfig: { domain: 'service', queryImpl, skipValidation: true },
-        baseTypesPath,
         cwd,
-        importTypesNamespace,
+        fileExt: serviceFileExt,
+        serviceConfig: {
+          domain: 'service',
+          queryImpl,
+          serviceFileExt,
+          skipValidation: true,
+        },
         serviceDir,
       });
       addServicePlugin(generateOptions, {
