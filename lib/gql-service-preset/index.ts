@@ -11,7 +11,7 @@ import { changeExtension, getPluginName, formatMessage } from './utils';
 import type { Types } from '@graphql-codegen/plugin-helpers';
 import type {
   ServiceFileExt,
-  GqlServicePluginConfig,
+  GqlServiceRawPluginConfig as GqlServicePluginConfig,
   QueryImpl,
 } from '../gql-service-plugin/types';
 import type { GqlServicePresetConfig } from './types';

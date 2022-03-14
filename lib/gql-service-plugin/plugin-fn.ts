@@ -2,9 +2,9 @@ import { formatMessage } from './utils';
 import { serviceFileBuilderMap } from './service-file-builder';
 import { contentBuilder as localContentBuilder } from './local-content-builder';
 import type { PluginFunction, Types } from '@graphql-codegen/plugin-helpers';
-import type { GqlServicePluginConfig } from './types';
+import type { GqlServiceRawPluginConfig } from './types';
 
-const pluginFnLocal: PluginFunction<GqlServicePluginConfig> = async (
+const pluginFnLocal: PluginFunction<GqlServiceRawPluginConfig> = async (
   schema,
   documents,
   config,
@@ -16,7 +16,7 @@ const pluginFnLocal: PluginFunction<GqlServicePluginConfig> = async (
   return localContentBuilder(schema, documents, config, info);
 };
 
-const pluginFnService: PluginFunction<GqlServicePluginConfig> = async (
+const pluginFnService: PluginFunction<GqlServiceRawPluginConfig> = async (
   schema,
   documents,
   config,
@@ -33,7 +33,7 @@ const pluginFnService: PluginFunction<GqlServicePluginConfig> = async (
   );
 };
 
-export const pluginFn: PluginFunction<GqlServicePluginConfig> = async (
+export const pluginFn: PluginFunction<GqlServiceRawPluginConfig> = async (
   schema,
   documents,
   config,
