@@ -29,5 +29,7 @@ generates:
       queryImpl: ${GQL_CODEGEN_QUERY_IMPL}
     plugins:
       - typescript-operations
+#      - typescript-urql:
+#          withHooks: true
     config:
       withHooks: false

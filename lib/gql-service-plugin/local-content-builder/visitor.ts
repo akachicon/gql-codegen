@@ -32,4 +32,23 @@ export class QueryImplVisitor extends ClientSideBaseVisitor<
     super(schema, fragments, config, {});
     autoBind(this);
   }
+
+  extractFragments(...args: any[]): string[] {
+    // @ts-ignore
+    return this._extractFragments(...args);
+  }
+
+  transformFragments(...args: any[]): any {
+    // @ts-ignore
+    return this._transformFragments(...args);
+  }
+
+  generateFragment(...args: any[]): any {
+    // @ts-ignore
+    return this._generateFragment(...args);
+  }
+
+  get allFragments() {
+    return this._fragments;
+  }
 }
