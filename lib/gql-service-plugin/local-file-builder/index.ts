@@ -1,6 +1,7 @@
-import { concatAST, visit, Kind } from 'graphql';
-import { QueryImplVisitor } from './visitor';
-import type { ASTVisitor, DocumentNode, FragmentDefinitionNode } from 'graphql';
+import { concatAST, Kind } from 'graphql';
+import { oldVisit } from '@graphql-codegen/plugin-helpers';
+import { FileBuilderVisitor } from '../file-builder-visitor';
+import type { DocumentNode, FragmentDefinitionNode } from 'graphql';
 import type { LoadedFragment } from '@graphql-codegen/visitor-plugin-common';
 import type { LocalContentBuilder } from '../types';
 
@@ -8,7 +9,7 @@ function isDocumentNode(node: DocumentNode | undefined): node is DocumentNode {
   return node !== undefined;
 }
 
-export const contentBuilder: LocalContentBuilder = (
+export const fileBuilder: LocalContentBuilder = (
   schema,
   documents,
   config,
@@ -38,36 +39,20 @@ export const contentBuilder: LocalContentBuilder = (
     })),
     ...(config.externalFragments || []),
   ];
-  const visitor = new QueryImplVisitor(schema, allFragments, config, documents);
+  const visitor = new FileBuilderVisitor(schema, allFragments, config);
+  oldVisit(allAst, { enter: visitor });
 
-  const operationVisitor: ASTVisitor = {
-    [Kind.OPERATION_DEFINITION]: {
-      enter(node) {
-        console.log(visitor.OperationDefinition(node));
-        return false;
-      },
-    },
-  };
+  const { content, hash, name, type, variablesName } =
+    visitor.getCompiledOperation();
 
-  documents.forEach((document) => {
-    // const allFragmentNodes = visitor.allFragments.map((f) => f.node);
-    // const docFragmentNodes = allFragmentNodes.filter((node) =>
-    //   visitor.extractFragments(document.document).includes(node.name.value),
-    // );
-    // docFragmentNodes.forEach((node) => {
-    //   console.log(visitor.generateFragment(node));
-    // });
-    // -
-    if (isDocumentNode(document.document)) {
-      visit(document.document, operationVisitor);
-    }
-    // -
-  });
-
-  // console.log(visitor.getImports());
-
-  // @ts-ignore
-  // console.log(print(documentASTs));
-
-  return '// local content';
+  return [
+    '// __NAME__',
+    `// ${name}`,
+    '\n',
+    '// __TYPE__',
+    `// ${type}`,
+    '\n',
+    '// __VARIABLES__',
+    `// ${variablesName ?? 'null'}`,
+  ].join('\n');
 };

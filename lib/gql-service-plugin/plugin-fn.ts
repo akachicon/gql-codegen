@@ -1,10 +1,10 @@
 import { formatMessage } from './utils';
 import { serviceFileBuilderMap } from './service-file-builder';
-import { contentBuilder as localContentBuilder } from './local-content-builder';
+import { fileBuilder as localFileBuilder } from './local-file-builder';
 import type { PluginFunction, Types } from '@graphql-codegen/plugin-helpers';
-import type { GqlServiceRawPluginConfig } from './types';
+import type { GqlServicePluginConfig } from './types';
 
-const pluginFnLocal: PluginFunction<GqlServiceRawPluginConfig> = async (
+const pluginFnLocal: PluginFunction<GqlServicePluginConfig> = async (
   schema,
   documents,
   config,
@@ -13,10 +13,10 @@ const pluginFnLocal: PluginFunction<GqlServiceRawPluginConfig> = async (
   if (!config.queryImpl) {
     throw new Error(formatMessage('queryImpl is not provided'));
   }
-  return localContentBuilder(schema, documents, config, info);
+  return localFileBuilder(schema, documents, config, info);
 };
 
-const pluginFnService: PluginFunction<GqlServiceRawPluginConfig> = async (
+const pluginFnService: PluginFunction<GqlServicePluginConfig> = async (
   schema,
   documents,
   config,
@@ -33,7 +33,7 @@ const pluginFnService: PluginFunction<GqlServiceRawPluginConfig> = async (
   );
 };
 
-export const pluginFn: PluginFunction<GqlServiceRawPluginConfig> = async (
+export const pluginFn: PluginFunction<GqlServicePluginConfig> = async (
   schema,
   documents,
   config,

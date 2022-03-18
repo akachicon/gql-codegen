@@ -1,34 +1,26 @@
-import type { RawClientSideBasePluginConfig } from '@graphql-codegen/visitor-plugin-common';
+import type { RawConfig } from '@graphql-codegen/visitor-plugin-common';
 import type { PluginFunction } from '@graphql-codegen/plugin-helpers';
 
 export type Domain = 'local' | 'service';
 
 export type ServiceFileExt = '.graphql';
 
-export type QueryImpl = 'local' | 'service';
+export type QueryImpl = 'direct' | 'service';
 
 export type GqlServicePluginConfigBase = {
+  filename?: string;
   domain?: Domain;
   serviceFileExt?: ServiceFileExt;
   skipValidation?: boolean;
   queryImpl?: QueryImpl;
 };
 
-// TODO: review after finishing implementation
-export type GqlServiceRawPluginConfig = Omit<
-  RawClientSideBasePluginConfig,
-  | keyof GqlServicePluginConfigBase
-  | 'documentMode'
-  | 'noGraphQLTag'
-  | 'gqlImport'
-  | 'documentNodeImport'
-  | 'noExport'
-  | 'importOperationTypesFrom'
-  | 'importDocumentNodeExternallyFrom'
-  | 'useTypeImports'
+export type GqlServicePluginConfig = Omit<
+  RawConfig,
+  keyof GqlServicePluginConfigBase
 > &
   GqlServicePluginConfigBase;
 
-export type ServiceFileBuilder = PluginFunction<GqlServiceRawPluginConfig>;
+export type ServiceFileBuilder = PluginFunction<GqlServicePluginConfig>;
 
-export type LocalContentBuilder = PluginFunction<GqlServiceRawPluginConfig>;
+export type LocalContentBuilder = PluginFunction<GqlServicePluginConfig>;

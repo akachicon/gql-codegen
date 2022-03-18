@@ -1,10 +1,10 @@
 import { validateSingleOperation } from '../utils';
 import { formatMessage } from './utils';
 import type { PluginValidateFn } from '@graphql-codegen/plugin-helpers';
-import type { GqlServiceRawPluginConfig } from './types';
+import type { GqlServicePluginConfig } from './types';
 
 export const pluginValidateFn: PluginValidateFn<
-  GqlServiceRawPluginConfig
+  GqlServicePluginConfig
 > = async (schema, documents, config): Promise<void> => {
   // Preset can use this hint to skip validation if the documents were
   // validated.

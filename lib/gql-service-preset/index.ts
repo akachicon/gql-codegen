@@ -1,4 +1,4 @@
-import { relative, resolve } from 'path';
+import { basename, relative, resolve } from 'path';
 import { preset as nearOperationFilePreset } from '@graphql-codegen/near-operation-file-preset';
 import { validateSingleOperation } from '../utils';
 import {
@@ -11,7 +11,7 @@ import { changeExtension, getPluginName, formatMessage } from './utils';
 import type { Types } from '@graphql-codegen/plugin-helpers';
 import type {
   ServiceFileExt,
-  GqlServiceRawPluginConfig as GqlServicePluginConfig,
+  GqlServicePluginConfig,
   QueryImpl,
 } from '../gql-service-plugin/types';
 import type { GqlServicePresetConfig } from './types';
@@ -41,7 +41,7 @@ function ensurePresetOptions(
   if (!queryImpl) {
     throw new Error(formatMessage('queryImpl config should be specified'));
   }
-  const availableQueryImpls: QueryImpl[] = ['local', 'service'];
+  const availableQueryImpls: QueryImpl[] = ['direct', 'service'];
   if (!availableQueryImpls.includes(queryImpl)) {
     throw new Error(formatMessage('Provided queryImpl value is not supported'));
   }
@@ -157,6 +157,7 @@ export const preset: Types.OutputPreset<GqlServicePresetConfig> = {
         cwd,
         fileExt: serviceFileExt,
         serviceConfig: {
+          filename: generateOptions.filename,
           domain: 'service',
           queryImpl,
           serviceFileExt,
@@ -165,6 +166,7 @@ export const preset: Types.OutputPreset<GqlServicePresetConfig> = {
         serviceDir,
       });
       addServicePlugin(generateOptions, {
+        filename: basename(generateOptions.filename),
         domain: 'local',
         queryImpl,
         skipValidation: true,

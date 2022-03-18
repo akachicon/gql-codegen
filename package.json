@@ -51,6 +51,7 @@
     "@graphql-codegen/typescript-urql": "^3.5.5",
     "@tsconfig/node16": "^1.0.2",
     "auto-bind": "4",
+    "change-case-all": "^1.0.14",
     "concurrently": "^7.0.0",
     "graphql": "^16.3.0",
     "prettier": "^2.5.1",

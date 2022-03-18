@@ -1,5 +1,5 @@
-query PlanetList {
-    allPlanets {
+query PlanetList($after: String = "PLANET_AFTER_ID") {
+    allPlanets(after: $after) {
         edges {
             node {
                 id
