@@ -16,10 +16,7 @@
 
 # GraphQL artifacts
 /src/**/__generated__
-/gql-service/build
-
-# Lib artifacts
-/lib/build
+/gql-codegen/generated-src
 
 # misc
 .DS_Store

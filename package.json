@@ -17,13 +17,12 @@
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "start": "yarn lib:build && yarn gql:update-schema && concurrently \"craco start\" \"yarn gql:generate --watch\"",
-    "build": "yarn lib:build && yarn gql:update-schema && yarn gql:generate && craco build",
-    "test": "craco test",
+    "start": "yarn gql:update-schema && concurrently \"craco start\" \"yarn gql:generate --watch\" \"yarn gql-doc-conveyor:watch\"",
+    "build": "yarn gql:update-schema && yarn gql:generate && craco build",
     "gql:generate": "graphql-codegen -r dotenv/config",
-    "gql:update-schema": "node ./lib/build/gql-update-schema",
-    "lib:build": "tsc --project ./lib",
-    "lib:watch": "yarn lib:build --watch"
+    "gql:update-schema": "tsc --project gql-update-schema && node ./gql-update-schema/build/index.js",
+    "gql-doc-conveyor:build": "tm2-gql-doc-conveyor build --doc-src-dir=./gql-codegen/generated-src --doc-out-dir=./gql-codegen/dist",
+    "gql-doc-conveyor:watch": "tm2-gql-doc-conveyor serve --watch --doc-src-dir=./gql-codegen/generated-src"
   },
   "eslintConfig": {
     "extends": [
@@ -48,7 +47,6 @@
     "@graphql-codegen/cli": "^2.4.0",
     "@graphql-codegen/near-operation-file-preset": "^2.2.3",
     "@graphql-codegen/typescript-operations": "^2.2.3",
-    "@graphql-codegen/typescript-urql": "^3.5.5",
     "@tsconfig/node16": "^1.0.2",
     "auto-bind": "4",
     "change-case-all": "^1.0.14",

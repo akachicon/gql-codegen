@@ -3,6 +3,7 @@ query PlanetList($after: String = "PLANET_AFTER_ID") {
         edges {
             node {
                 id
+                diameter
                 ...planet
             }
         }

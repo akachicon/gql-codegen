@@ -19,17 +19,15 @@ generates:
     plugins:
       - typescript
   ./src/:
-    preset: ./lib/build/gql-service-preset
+    preset: "@CortexTechnology/tm2-gql-doc-codegen/dist/preset"
     presetConfig:
       baseTypesPath: ./__generated__/schema-types.ts
       extension: .ts
       folder: __generated__
-      serviceDir: ../gql-service/build
+      serviceDir: ../gql-codegen/generated-src
       serviceFileExt: .graphql
       queryImpl: ${GQL_CODEGEN_QUERY_IMPL}
     plugins:
       - typescript-operations
-#      - typescript-urql:
-#          withHooks: true
     config:
       withHooks: false
